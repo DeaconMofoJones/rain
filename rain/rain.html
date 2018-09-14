@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>rain</title>
+	<link rel="stylesheet" type="text/css" href="rain.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.11.5/paper-full.js" type="text/javascript" charset="utf-8" async defer></script>
+	<script type="text/paperscript" canvas="myCanvas">
+		// <!-- rainConfig -->
+		var raindropLength=2; /*leave empty if you want length to respond to velocity*/
+		var raindropMaxWidth=2;
+		var raindropMaxSpeed=30;
+		var framesPerParticle=2;
+		var raindrops=[];
+		// CORNERS
+		var topLeftCorner=new Point();
+		var topRightCorner=new Point(view.size.width,0);
+		var bottomLeftCorner=new Point(0,view.size.height);
+		var bottomRightCorner=new Point(view.size.width,view.size.height);
+		// SIDES
+		var topSide 	= {x:view.size.width,	y:0,					xOffset:0,					yOffset:0,velocity:new Point(0,raindropMaxSpeed)};
+		var rightSide 	= {x:0,					y:view.size.height,		xOffset:view.size.width,	yOffset:0,velocity:new Point(-raindropMaxSpeed,0)};
+		var bottomSide 	= {x:view.size.width,	y:0,					xOffset:0,					yOffset:view.size.height,velocity:new Point(0,-raindropMaxSpeed)};
+		var leftSide 	= {x:0,					y:view.size.height,		xOffset:0,					yOffset:0,velocity:new Point(raindropMaxSpeed,0)};
+		var currentSide = leftSide;
+
+		function addRaindrop(side){
+			var ran1 = Math.floor(Math.random()*view.size.width);
+			var ran2 = Math.floor(Math.random()*view.size.width);
+			var ranX = Math.floor(Math.random()*side.x+side.xOffset);
+			var ranY = Math.floor(Math.random()*side.y+side.yOffset);
+
+			var distance = Math.random()+1;
+			var path = new Path.Line({
+				segments:[new Point(ranX,ranY),new Point(ranX,ranY)],
+				strokeColor:"#ffffff",
+				strokeWidth:raindropMaxWidth/distance,
+				velocity:side.velocity/distance,
+				distance:distance
+			});
+			raindrops.push(path);
+		}
+
+		function updateRaindrops(){
+			for (i=0;i<raindrops.length;i++){
+				raindrops[i].velocity=currentSide.velocity/raindrops[i].distance;
+				raindrops[i].segments[0].point=raindrops[i].segments[1].point+currentSide.velocity;
+				raindrops[i].position+=raindrops[i].velocity;
+				
+					raindrops[i].length=raindropLength;
+				
+				if(raindrops[i].position.y>view.size.height||raindrops[i].position.y<0||raindrops[i].position.x>view.size.width||raindrops[i].position<0){
+					raindrops[i].remove();
+					raindrops.splice(i,1);
+					
+				}
+			}
+		}
+
+		function onKeyDown(event){
+			if (event.key==="w") {
+				currentSide=bottomSide;
+			} else if (event.key==="a") {
+				currentSide=rightSide;
+			} else if (event.key==="s") {
+				currentSide=topSide;
+			} else if (event.key==="d") {
+				currentSide=leftSide;
+			}
+		}
+
+		function onFrame(event) {
+			if(event.count%framesPerParticle===0){
+				addRaindrop(currentSide);
+			}
+			updateRaindrops();
+			console.log(raindrops)
+		}
+	</script>
+</head>
+<body>
+	<canvas id="myCanvas">
+	</canvas>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Rain</title>
+	<link rel="stylesheet" type="text/css" href="rain2.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.11.5/paper-full.js" type="text/javascript" charset="utf-8" async defer></script>
+	<script type="text/paperscript" canvas="myCanvas">
+		var starCount = 600;
+		var stars=[];
+		var starWidth=1;
+		var velocity=new Point();
+		var line = new Path.Line({
+			segments:[new Point(view.size.width/2,view.size.height/2),new Point(view.size.width/2,view.size.height/2)]
+		});
+		// console.log(line);
+		for(var i=0;i<starCount;i++){
+			var x = Math.random()*view.size.width;
+			var y = Math.random()*view.size.height;
+			var distance = Math.random()+1;
+			var path = new Path.Circle({
+				radius:starWidth/distance,
+				position:[x,y],
+				strokeColor:"#ffffff",
+				strokeWidth:starWidth/distance,
+				velocity:new Point(),
+				distance:distance
+			});
+			stars.push(path);
+		}
+
+		function onMouseMove(event){
+			
+			line.segments[0].point=event.point;
+			velocity=(line.segments[0].point-line.segments[1].point)*0.04;
+			// velocity.length=1;
+			// console.log(velocity);
+		}
+
+		function updateStars(){
+			for (i=0;i<stars.length;i++){
+				stars[i].velocity=velocity/stars[i].distance;
+				stars[i].position+=stars[i].velocity;
+				if(stars[i].position.x<0){
+					stars[i].position.x=view.size.width;
+				} else if(stars[i].position.x>view.size.width){
+					stars[i].position.x=0;
+				}
+				if(stars[i].position.y<0){
+					stars[i].position.y=view.size.height;
+				} else if(stars[i].position.y>view.size.height){
+					stars[i].position.y=0;
+				}
+			}
+		}
+
+		function onFrame(event) {
+			updateStars();
+		}
+
+	</script>
+</head>
+<body>
+	<canvas id="myCanvas">
+	</canvas>
+</body>
+</html>

@@ -1,0 +1,14 @@
+html, body, canvas {
+	padding: 0;
+	margin: 0;
+}
+body{
+	text-align: center;
+}
+canvas {
+	width: 1000px;
+	height: 600px;
+	/*width: 95vh;
+    height: 95vh;*/
+	background: black;
+}
